@@ -10,20 +10,21 @@ import flash.net.NetStream;
 import flash.text.TextField;
 import flash.text.TextFormat;
 import flash.utils.Timer;
-import edu.du.data.CaptionsHandler;
+import edu.du.captions.utils.CaptionsHandler;
 
 [SWF(width="854", height="480", backgroundColor="#000000", frameRate="30")]
 
 public class Main extends Sprite {
-    public var videoHolder:Video;
+    private var videoHolder:Video;
     private var captionsHandler:CaptionsHandler;
     private var captionDisplay:TextField;
     private var captionFormat:TextFormat;
     private var captionsTimer:Timer;
     private var netConnection:NetConnection;
     private var netStream:NetStream;
-    private const videoPath:String = "video.mp4";
-    private const captionsPath:String = "captions.vtt";
+
+    private const videoPath:String = "assets/video.mp4";
+    private const captionsPath:String = "assets/captions.vtt";
 
     public function Main() {
         captionsTimer = new Timer(200);
