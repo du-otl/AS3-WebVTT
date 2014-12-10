@@ -1,10 +1,9 @@
 /**
  * Created by joseph.labrecque on 12/2/2014.
  */
-package edu.du.utils {
+package edu.du.captions.utils {
 public class TimeFormatter {
     public function TimeFormatter() {}
-
     public function seconds2HMS(raw_seconds:int):String {
         var hours:int = Math.floor(raw_seconds/3600);
         var minutes:int = Math.floor((raw_seconds-(hours*3600))/60);
@@ -29,7 +28,6 @@ public class TimeFormatter {
         }
         return time_string;
     }
-
     public function text2Sec(t:String):Number {
         var time:String = t;
         var seconds:Number = 0;
