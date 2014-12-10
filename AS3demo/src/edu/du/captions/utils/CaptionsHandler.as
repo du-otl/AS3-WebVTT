@@ -1,5 +1,6 @@
 /**
  * Created by joseph.labrecque on 12/1/2014.
+ * release version 1.0.0
  */
 package edu.du.captions.utils {
 import flash.text.TextField;
