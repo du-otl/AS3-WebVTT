@@ -1,5 +1,4 @@
 package {
-
 import flash.display.Sprite;
 import flash.events.TimerEvent;
 import flash.filters.BitmapFilterQuality;
@@ -11,6 +10,8 @@ import flash.text.TextField;
 import flash.text.TextFormat;
 import flash.utils.Timer;
 import edu.du.captions.utils.CaptionsHandler;
+import edu.du.captions.events.CaptionLoadEvent;
+import edu.du.captions.events.CaptionParseEvent;
 
 [SWF(width="854", height="480", backgroundColor="#000000", frameRate="30")]
 
@@ -24,7 +25,7 @@ public class Main extends Sprite {
     private var netStream:NetStream;
 
     private const videoPath:String = "assets/video.mp4";
-    private const captionsPath:String = "assets/captions.vtt";
+    private const captionsPath:String = "assets/captiosns.vtt";
 
     public function Main() {
         captionsTimer = new Timer(200);
@@ -32,6 +33,10 @@ public class Main extends Sprite {
         buildVideoDisplay();
         buildCaptionDisplay();
         captionsHandler = new CaptionsHandler();
+        captionsHandler.addEventListener(CaptionLoadEvent.LOADED, onCaptionsLoaded);
+        captionsHandler.addEventListener(CaptionLoadEvent.ERROR, onCaptionsError);
+        captionsHandler.addEventListener(CaptionParseEvent.PARSED, onCaptionsParsed);
+        captionsHandler.addEventListener(CaptionParseEvent.ERROR, onCaptionsError);
         captionsHandler.gatherCaptions(captionsPath);
     }
 
@@ -69,5 +74,21 @@ public class Main extends Sprite {
         var t:Number = netStream.time;
         captionsHandler.renderCaptions(t, captionDisplay);
     }
+
+
+
+
+    private function onCaptionsLoaded(e:CaptionLoadEvent):void {
+        trace("loaded successfully");
+    }
+
+    private function onCaptionsParsed(e:CaptionParseEvent):void {
+        trace("parsed successfully");
+    }
+
+    private function onCaptionsError(e:*):void {
+        trace("bad news kids...");
+    }
+
 }
 }

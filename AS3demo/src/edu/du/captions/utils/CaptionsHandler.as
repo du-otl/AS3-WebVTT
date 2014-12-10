@@ -2,10 +2,11 @@
  * Created by joseph.labrecque on 12/1/2014.
  */
 package edu.du.captions.utils {
+import flash.events.EventDispatcher;
 import flash.text.TextField;
 import edu.du.captions.data.CaptionsParser;
 
-public class CaptionsHandler {
+public class CaptionsHandler extends EventDispatcher {
     private var timeFormatter:TimeFormatter;
     private var captionsParser:CaptionsParser;
     private var currentCaptionText:String;
