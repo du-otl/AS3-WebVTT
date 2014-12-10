@@ -25,7 +25,7 @@ public class Main extends Sprite {
     private var netStream:NetStream;
 
     private const videoPath:String = "assets/video.mp4";
-    private const captionsPath:String = "assets/captiosns.vtt";
+    private const captionsPath:String = "assets/captions.vtt";
 
     public function Main() {
         captionsTimer = new Timer(200);
@@ -33,10 +33,10 @@ public class Main extends Sprite {
         buildVideoDisplay();
         buildCaptionDisplay();
         captionsHandler = new CaptionsHandler();
-        captionsHandler.addEventListener(CaptionLoadEvent.LOADED, onCaptionsLoaded);
-        captionsHandler.addEventListener(CaptionLoadEvent.ERROR, onCaptionsError);
-        captionsHandler.addEventListener(CaptionParseEvent.PARSED, onCaptionsParsed);
-        captionsHandler.addEventListener(CaptionParseEvent.ERROR, onCaptionsError);
+        captionsHandler.captionsParser.addEventListener(CaptionLoadEvent.LOADED, onCaptionsLoaded);
+        captionsHandler.captionsParser.addEventListener(CaptionLoadEvent.ERROR, onCaptionsError);
+        captionsHandler.captionsParser.addEventListener(CaptionParseEvent.PARSED, onCaptionsParsed);
+        captionsHandler.captionsParser.addEventListener(CaptionParseEvent.ERROR, onCaptionsError);
         captionsHandler.gatherCaptions(captionsPath);
     }
 
@@ -51,7 +51,6 @@ public class Main extends Sprite {
         videoHolder.attachNetStream(netStream);
         netStream.play(videoPath);
         addChild(videoHolder);
-        captionsTimer.start();
     }
 
     private function buildCaptionDisplay():void {
@@ -75,20 +74,19 @@ public class Main extends Sprite {
         captionsHandler.renderCaptions(t, captionDisplay);
     }
 
-
-
-
-    private function onCaptionsLoaded(e:CaptionLoadEvent):void {
-        trace("loaded successfully");
-    }
-
+    private function onCaptionsLoaded(e:CaptionLoadEvent):void {}
     private function onCaptionsParsed(e:CaptionParseEvent):void {
-        trace("parsed successfully");
+        captionsTimer.start();
+        cleanCaptionListeners();
     }
-
     private function onCaptionsError(e:*):void {
-        trace("bad news kids...");
+        cleanCaptionListeners();
     }
-
+    private function cleanCaptionListeners():void {
+        captionsHandler.captionsParser.removeEventListener(CaptionLoadEvent.LOADED, onCaptionsLoaded);
+        captionsHandler.captionsParser.removeEventListener(CaptionLoadEvent.ERROR, onCaptionsError);
+        captionsHandler.captionsParser.removeEventListener(CaptionParseEvent.PARSED, onCaptionsParsed);
+        captionsHandler.captionsParser.removeEventListener(CaptionParseEvent.ERROR, onCaptionsError);
+    }
 }
 }

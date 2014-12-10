@@ -8,8 +8,10 @@ import flash.events.IOErrorEvent;
 import flash.events.SecurityErrorEvent;
 import flash.net.URLLoader;
 import flash.net.URLRequest;
+import edu.du.captions.events.CaptionLoadEvent;
+import edu.du.captions.events.CaptionParseEvent;
 
-public class CaptionsParser {
+public class CaptionsParser extends EventDispatcher {
     private var rawArray:Array;
     private var captionsLoader:URLLoader;
     private var _captionsArray:Array;
@@ -39,19 +41,25 @@ public class CaptionsParser {
                 caption.captionText = captionText.replace("\r\n", "<br>");
                 _captionsArray.push(caption);
             }
-            //dispatchEvent(new CaptionParseEvent(CaptionParseEvent.PARSED, true));
+            captionsLoader.removeEventListener(IOErrorEvent.IO_ERROR, captionsError);
+            captionsLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, captionsError);
+            dispatchEvent(new CaptionParseEvent(CaptionParseEvent.PARSED, true));
         } catch (e:Error){
-            //dispatchEvent(new CaptionParseEvent(CaptionParseEvent.ERROR, true));
+            captionsLoader.removeEventListener(IOErrorEvent.IO_ERROR, captionsError);
+            captionsLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, captionsError);
+            dispatchEvent(new CaptionParseEvent(CaptionParseEvent.ERROR, true));
         }
     }
     public function captionsLoaded(e:Event):void {
-        //dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.LOADED, true));
         rawArray = e.target.data.split("\r\n\r\n");
         parseCaptions(rawArray);
         captionsLoader.removeEventListener(Event.COMPLETE, captionsLoaded);
+        dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.LOADED, true));
     }
     private function captionsError(e:*):void {
-        //dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.ERROR, true));
+        captionsLoader.removeEventListener(IOErrorEvent.IO_ERROR, captionsError);
+        captionsLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, captionsError);
+        dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.ERROR, true));
     }
     public function get captionsArray():Array {
         return _captionsArray;
