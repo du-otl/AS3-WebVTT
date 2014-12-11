@@ -23,8 +23,12 @@ The video and text objects are completely under your control. Experiment with te
 
 If you do improve the classes – please contribute back to the project! Everything is pretty solid right now but there is always room for improvement. Some pieces of the WebVTT specification (such as alignment) are currently ignored by the parser.
 
+
 Flash Professional Demo:
+
 ![flashdemo](https://cloud.githubusercontent.com/assets/3355144/5395941/039156de-810b-11e4-94d8-c2b843b00b86.png)
 
+
 Pure AS3 Demo:
+
 ![as3demo](https://cloud.githubusercontent.com/assets/3355144/5395942/0393cbf8-810b-11e4-8e5f-a99943147d4a.png)
