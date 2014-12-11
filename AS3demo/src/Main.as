@@ -24,8 +24,8 @@ public class Main extends Sprite {
     private var netConnection:NetConnection;
     private var netStream:NetStream;
 
-    private const videoPath:String = "assets/video.mp4";
-    private const captionsPath:String = "assets/captions.vtt";
+    private const videoPath:String = "../../../../assets/video.mp4";
+    private const captionsPath:String = "../../../../assets/captions.vtt";
 
     public function Main() {
         captionsTimer = new Timer(200);
