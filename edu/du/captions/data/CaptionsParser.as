@@ -28,8 +28,19 @@ public class CaptionsParser extends EventDispatcher {
         captionsLoader.load(new URLRequest(f));
     }
     private function parseCaptions(r:Array):void {
+        var l:int = r.length;
         try {
-            var l:int = r.length;
+            var rawTestIndex:int = rawArray[1].indexOf("\r\n");
+            if(rawTestIndex == 1) {
+                try {
+                    for (var j:int = 1; j < l; j++) {
+                        rawTestIndex = rawArray[j].indexOf("\r\n");
+                        rawArray[j] = rawArray[j].substring(rawTestIndex + 2);
+                    }
+                } catch (e:Error){
+                    dispatchEvent(new CaptionParseEvent(CaptionParseEvent.ERROR, true));
+                }
+            }
             for (var i:int = 1; i < l; i++) {
                 var caption:Object = new Object();
                 var startTime:String = r[i].substr(0, 12);
@@ -51,14 +62,15 @@ public class CaptionsParser extends EventDispatcher {
         }
     }
     public function captionsLoaded(e:Event):void {
+        dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.LOADED, true));
         rawArray = e.target.data.split("\r\n\r\n");
         parseCaptions(rawArray);
         captionsLoader.removeEventListener(Event.COMPLETE, captionsLoaded);
-        dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.LOADED, true));
     }
     private function captionsError(e:*):void {
         captionsLoader.removeEventListener(IOErrorEvent.IO_ERROR, captionsError);
         captionsLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, captionsError);
+        _captionsArray = new Array();
         dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.ERROR, true));
     }
     public function get captionsArray():Array {
