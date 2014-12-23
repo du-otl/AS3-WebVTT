@@ -1,9 +1,11 @@
 /**
- * Created by joseph.labrecque on 12/2/2014.
+ * Created by Joseph Labrecque on 12/2/2014.
  */
 package edu.du.captions.utils {
 public class TimeFormatter {
     public function TimeFormatter() {}
+    
+    //converts raw seconds into a "00:00:00" string.
     public function seconds2HMS(raw_seconds:int):String {
         var hours:int = Math.floor(raw_seconds/3600);
         var minutes:int = Math.floor((raw_seconds-(hours*3600))/60);
@@ -28,6 +30,8 @@ public class TimeFormatter {
         }
         return time_string;
     }
+    
+    //converts a string formatted like "00:00:00" to raw seconds.
     public function text2Sec(t:String):Number {
         var time:String = t;
         var seconds:Number = 0;

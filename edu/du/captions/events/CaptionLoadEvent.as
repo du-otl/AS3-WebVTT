@@ -1,5 +1,5 @@
 /**
- * Created by joseph.labrecque on 12/10/2014.
+ * Created by Joseph Labrecque on 12/10/2014.
  */
 package edu.du.captions.events {
 import flash.events.Event;
