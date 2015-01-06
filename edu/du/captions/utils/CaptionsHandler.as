@@ -22,6 +22,7 @@ public class CaptionsHandler {
     //pass in the URL to a .vtt file here - it'll employ the parser to load it up.
     public function gatherCaptions(s:String):void {
         var filePath:String = s;
+        currentCaptionText = "";
         captionsParser.loadCaptions(filePath);
     }
     

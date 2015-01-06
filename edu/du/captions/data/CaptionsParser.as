@@ -25,6 +25,10 @@ public class CaptionsParser extends EventDispatcher {
 
     //adds some listeners to the URLLoader and then loads the vtt file
     public function loadCaptions(f:String):void {
+        captionsLoader = new URLLoader();
+        _captionsArray = new Array();
+        rawArray = new Array();
+        
         captionsLoader.addEventListener(Event.COMPLETE, captionsLoaded);
         captionsLoader.addEventListener(IOErrorEvent.IO_ERROR, captionsError);
         captionsLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, captionsError);
@@ -35,15 +39,19 @@ public class CaptionsParser extends EventDispatcher {
     private function parseCaptions(r:Array):void {
         var l:int = r.length;
         try {
+            var chapterSignifier:String = "\r\n";
+            if (rawArray[1].indexOf("\r\n") == -1) {
+                chapterSignifier = "\n";
+            }
             //here we are looking to see whether we need to strip out caption indexes.
             //we check the position at index 1 since index 0 is just "WEBVTT" - always skip that junk!
-            var rawTestIndex:int = rawArray[1].indexOf("\r\n");
+            var rawTestIndex:int = rawArray[1].indexOf(chapterSignifier);
             if(rawTestIndex == 1) {
                 //okay... we have indexes. let's kill them all.
                 try {
                     for (var j:int = 1; j < l; j++) {
-                        rawTestIndex = rawArray[j].indexOf("\r\n");
-                        rawArray[j] = rawArray[j].substring(rawTestIndex + 2);
+                        rawTestIndex = rawArray[j].indexOf(chapterSignifier);
+                        rawArray[j] = rawArray[j].substring(rawTestIndex + chapterSignifier.length);
                     }
                 } catch (e:Error){
                     dispatchEvent(new CaptionParseEvent(CaptionParseEvent.ERROR, true));
@@ -56,13 +64,16 @@ public class CaptionsParser extends EventDispatcher {
                 //we get the start and end times from the standard vtt time format of "00:00.000".
                 var startTime:String = r[i].substr(0, 12);
                 var stopTime:String = r[i].substr(17, 12);
-                //here we identify the first line break - this is where teh caption text lives.
-                var textIndex:int = r[i].indexOf("\r\n");
-                var captionText:String = r[i].substr(textIndex + 2);
+                //here we identify the first line break - this is where the caption text lives.
+                var textIndex:int = r[i].indexOf(chapterSignifier);
+                var captionText:String = "";
+                if (textIndex != -1){
+                    captionText = r[i].substr(textIndex + chapterSignifier.length);
+                }
                 caption.startTime = startTime;
                 caption.stopTime = stopTime;
                 //replace the breaks with HTML junk for the TextField.
-                caption.captionText = captionText.replace("\r\n", "<br>");
+                caption.captionText = captionText.replace(chapterSignifier, "<br>");
                 //add the baby to our array. this one is cooked.
                 _captionsArray.push(caption);
             }
@@ -81,7 +92,11 @@ public class CaptionsParser extends EventDispatcher {
     //captions loaded successfully - now this will all get parsed into little neat objects and placed in an array.
     public function captionsLoaded(e:Event):void {
         dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.LOADED, true));
-        rawArray = e.target.data.split("\r\n\r\n");
+        var captionSignifier:String = "\r\n\r\n";
+        if (e.target.data.indexOf("\r\n\r\n") == -1) {
+            captionSignifier = "\n\n";
+        }
+        rawArray = e.target.data.split(captionSignifier);
         parseCaptions(rawArray);
         //let the application know that we have loaded the file just fine!
         captionsLoader.removeEventListener(Event.COMPLETE, captionsLoaded);
@@ -89,11 +104,11 @@ public class CaptionsParser extends EventDispatcher {
 
     //tsk tsk tsk... something is wrong... does the file even exist?
     private function captionsError(e:*):void {
+        //let the application know something truly horrifying has occurred...
+        dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.ERROR, true));
         captionsLoader.removeEventListener(IOErrorEvent.IO_ERROR, captionsError);
         captionsLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, captionsError);
         _captionsArray = new Array();
-        //let the application know something truly horrifying has occurred...
-        dispatchEvent(new CaptionLoadEvent(CaptionLoadEvent.ERROR, true));
     }
 
     //CaptionsHandler grabs the captions through this.

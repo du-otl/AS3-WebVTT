@@ -38,6 +38,7 @@ public class TimeFormatter {
         seconds += Number(time.substr(0,2))*3600;
         seconds += Number(time.substr(3,2))*60;
         seconds += Number(time.substr(6,2));
+        seconds = Number(seconds + "." + time.substr(9,3));
         return seconds;
     }
 }
